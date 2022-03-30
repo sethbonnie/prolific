@@ -26,11 +26,11 @@ func (w weeklyInterval) IsActive(t time.Time) bool {
 	}
 
 	d := w.startDate
-	date := t.Format("2006/01/02")
+	date := t.Format(dateFormat)
 
 	for d.Before(t) {
 		for wd := range w.on {
-			if findNext(wd, d).Format("2006/01/02") == date {
+			if findNext(wd, d).Format(dateFormat) == date {
 				return true
 			}
 		}
@@ -38,7 +38,7 @@ func (w weeklyInterval) IsActive(t time.Time) bool {
 		d = d.AddDate(0, 0, w.every*7)
 	}
 
-	return d.Format("2006/01/02") == date
+	return d.Format(dateFormat) == date
 }
 
 func Sundays(from time.Time) Interval {
