@@ -13,6 +13,29 @@ type weeklyFrequency struct {
 	on        weekdays
 }
 
+func (w weeklyFrequency) Check(t time.Time) bool {
+	if !w.on[t.Weekday()] {
+		return false
+	}
+
+	d := w.startDate
+	date := t.Format(dateFormat)
+
+	// TODO: Figure out if we can calculate this without using a loop similar to how dailyFrequency.Check works
+	// 	I'm thinking we can use something like t - day % 7*d.every == 0 for each day in d.on
+	for d.Before(t) {
+		for wd := range w.on {
+			if findNext(wd, d).Format(dateFormat) == date {
+				return true
+			}
+		}
+
+		d = d.AddDate(0, 0, w.every*7)
+	}
+
+	return d.Format(dateFormat) == date
+}
+
 func Weekly(start time.Time, every int, days []time.Weekday) (Frequency, error) {
 	if len(days) == 0 {
 		return weeklyFrequency{}, ErrEmptyFrequency
@@ -27,27 +50,6 @@ func Weekly(start time.Time, every int, days []time.Weekday) (Frequency, error) 
 		on[d] = true
 	}
 	return weeklyFrequency{start, every, on}, nil
-}
-
-func (w weeklyFrequency) Check(t time.Time) bool {
-	if !w.on[t.Weekday()] {
-		return false
-	}
-
-	d := w.startDate
-	date := t.Format(dateFormat)
-
-	for d.Before(t) {
-		for wd := range w.on {
-			if findNext(wd, d).Format(dateFormat) == date {
-				return true
-			}
-		}
-
-		d = d.AddDate(0, 0, w.every*7)
-	}
-
-	return d.Format(dateFormat) == date
 }
 
 func Sundays(from time.Time) (Frequency, error) {
@@ -78,14 +80,6 @@ func Saturdays(from time.Time) (Frequency, error) {
 	return Weekly(findNext(time.Saturday, from), 1, []time.Weekday{time.Saturday})
 }
 
-func Weekends(from time.Time) (Frequency, error) {
-	d := from.Weekday()
-	if d != time.Saturday && d != time.Sunday {
-		from = findNext(time.Saturday, from)
-	}
-	return Weekly(from, 1, []time.Weekday{time.Sunday, time.Saturday})
-}
-
 func Weekdays(from time.Time) (Frequency, error) {
 	d := from.Weekday()
 	if d == time.Saturday || d == time.Sunday {
@@ -96,6 +90,14 @@ func Weekdays(from time.Time) (Frequency, error) {
 		1,
 		[]time.Weekday{time.Monday, time.Tuesday, time.Wednesday, time.Thursday, time.Friday},
 	)
+}
+
+func Weekends(from time.Time) (Frequency, error) {
+	d := from.Weekday()
+	if d != time.Saturday && d != time.Sunday {
+		from = findNext(time.Saturday, from)
+	}
+	return Weekly(from, 1, []time.Weekday{time.Sunday, time.Saturday})
 }
 
 func findNext(next time.Weekday, start time.Time) time.Time {
