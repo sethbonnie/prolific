@@ -1,4 +1,4 @@
-package interval
+package frequency
 
 import (
 	"testing"
@@ -134,8 +134,8 @@ func TestDailyForWeeks(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			interval, _ := DailyForWeeks(tc.from, tc.every, tc.weeks)
-			require.Equal(t, tc.expected, interval.IsActive(tc.date))
+			frequency, _ := DailyForWeeks(tc.from, tc.every, tc.weeks)
+			require.Equal(t, tc.expected, frequency.IsActive(tc.date))
 		})
 	}
 }
@@ -202,8 +202,8 @@ func TestDailyForMonths(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			interval, _ := DailyForMonths(tc.from, tc.every, tc.months)
-			require.Equal(t, tc.expected, interval.IsActive(tc.date))
+			frequency, _ := DailyForMonths(tc.from, tc.every, tc.months)
+			require.Equal(t, tc.expected, frequency.IsActive(tc.date))
 		})
 	}
 }
@@ -278,8 +278,8 @@ func TestDailyForYears(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			interval, _ := DailyForYears(tc.from, tc.every, tc.years)
-			require.Equal(t, tc.expected, interval.IsActive(tc.date))
+			frequency, _ := DailyForYears(tc.from, tc.every, tc.years)
+			require.Equal(t, tc.expected, frequency.IsActive(tc.date))
 		})
 	}
 }

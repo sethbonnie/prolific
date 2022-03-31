@@ -1,4 +1,4 @@
-package interval
+package frequency
 
 import (
 	"fmt"
@@ -66,7 +66,7 @@ func TestFindNext(t *testing.T) {
 	}
 }
 
-func TestWeeklyInterval(t *testing.T) {
+func TestWeeklyFrequency(t *testing.T) {
 	aFriday := time.Date(2022, 4, 1, 0, 0, 0, 0, time.Now().UTC().Location())
 	testCases := []struct {
 		name      string
@@ -147,15 +147,15 @@ func TestWeeklyInterval(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			interval, err := Weekly(tc.startDate, tc.every, tc.on)
+			frequency, err := Weekly(tc.startDate, tc.every, tc.on)
 			require.Nil(t, err)
-			require.Equal(t, tc.expect, interval.IsActive(tc.date))
+			require.Equal(t, tc.expect, frequency.IsActive(tc.date))
 		})
 	}
 }
 
 func TestWeekdayHelpers(t *testing.T) {
-	fns := map[time.Weekday]func(time.Time) (Interval, error){
+	fns := map[time.Weekday]func(time.Time) (Frequency, error){
 		time.Sunday:    Sundays,
 		time.Monday:    Mondays,
 		time.Tuesday:   Tuesdays,
@@ -167,7 +167,7 @@ func TestWeekdayHelpers(t *testing.T) {
 
 	type testCase struct {
 		name     string
-		fn       func(time.Time) (Interval, error)
+		fn       func(time.Time) (Frequency, error)
 		start    time.Time
 		date     time.Time
 		expected bool
@@ -200,9 +200,9 @@ func TestWeekdayHelpers(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			interval, err := tc.fn(tc.start)
+			frequency, err := tc.fn(tc.start)
 			require.Nil(t, err)
-			require.Equal(t, tc.expected, interval.IsActive(tc.date))
+			require.Equal(t, tc.expected, frequency.IsActive(tc.date))
 		})
 	}
 }
@@ -233,9 +233,9 @@ func TestWeekdays(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			interval, err := Weekdays(tc.from)
+			frequency, err := Weekdays(tc.from)
 			require.Nil(t, err)
-			require.Equal(t, tc.expected, interval.IsActive(tc.date))
+			require.Equal(t, tc.expected, frequency.IsActive(tc.date))
 		})
 	}
 }
@@ -266,9 +266,9 @@ func TestWeekends(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			interval, err := Weekends(tc.from)
+			frequency, err := Weekends(tc.from)
 			require.Nil(t, err)
-			require.Equal(t, tc.expected, interval.IsActive(tc.date))
+			require.Equal(t, tc.expected, frequency.IsActive(tc.date))
 		})
 	}
 }

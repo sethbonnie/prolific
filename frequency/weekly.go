@@ -1,4 +1,4 @@
-package interval
+package frequency
 
 import (
 	"fmt"
@@ -7,29 +7,29 @@ import (
 
 type weekdays map[time.Weekday]bool
 
-type weeklyInterval struct {
+type weeklyFrequency struct {
 	startDate time.Time
 	every     int // every n weeks
 	on        weekdays
 }
 
-func Weekly(start time.Time, every int, days []time.Weekday) (Interval, error) {
+func Weekly(start time.Time, every int, days []time.Weekday) (Frequency, error) {
 	if len(days) == 0 {
-		return weeklyInterval{}, ErrEmptyInterval
+		return weeklyFrequency{}, ErrEmptyFrequency
 	}
 
 	if every < 1 {
-		return weeklyInterval{}, fmt.Errorf("%w: every %v", ErrNonPositiveInt, every)
+		return weeklyFrequency{}, fmt.Errorf("%w: every %v", ErrNonPositiveInt, every)
 	}
 
 	on := make(weekdays)
 	for _, d := range days {
 		on[d] = true
 	}
-	return weeklyInterval{start, every, on}, nil
+	return weeklyFrequency{start, every, on}, nil
 }
 
-func (w weeklyInterval) IsActive(t time.Time) bool {
+func (w weeklyFrequency) IsActive(t time.Time) bool {
 	if !w.on[t.Weekday()] {
 		return false
 	}
@@ -50,35 +50,35 @@ func (w weeklyInterval) IsActive(t time.Time) bool {
 	return d.Format(dateFormat) == date
 }
 
-func Sundays(from time.Time) (Interval, error) {
+func Sundays(from time.Time) (Frequency, error) {
 	return Weekly(findNext(time.Sunday, from), 1, []time.Weekday{time.Sunday})
 }
 
-func Mondays(from time.Time) (Interval, error) {
+func Mondays(from time.Time) (Frequency, error) {
 	return Weekly(findNext(time.Monday, from), 1, []time.Weekday{time.Monday})
 }
 
-func Tuesdays(from time.Time) (Interval, error) {
+func Tuesdays(from time.Time) (Frequency, error) {
 	return Weekly(findNext(time.Tuesday, from), 1, []time.Weekday{time.Tuesday})
 }
 
-func Wednesdays(from time.Time) (Interval, error) {
+func Wednesdays(from time.Time) (Frequency, error) {
 	return Weekly(findNext(time.Wednesday, from), 1, []time.Weekday{time.Wednesday})
 }
 
-func Thursdays(from time.Time) (Interval, error) {
+func Thursdays(from time.Time) (Frequency, error) {
 	return Weekly(findNext(time.Thursday, from), 1, []time.Weekday{time.Thursday})
 }
 
-func Fridays(from time.Time) (Interval, error) {
+func Fridays(from time.Time) (Frequency, error) {
 	return Weekly(findNext(time.Friday, from), 1, []time.Weekday{time.Friday})
 }
 
-func Saturdays(from time.Time) (Interval, error) {
+func Saturdays(from time.Time) (Frequency, error) {
 	return Weekly(findNext(time.Saturday, from), 1, []time.Weekday{time.Saturday})
 }
 
-func Weekends(from time.Time) (Interval, error) {
+func Weekends(from time.Time) (Frequency, error) {
 	d := from.Weekday()
 	if d != time.Saturday && d != time.Sunday {
 		from = findNext(time.Saturday, from)
@@ -86,7 +86,7 @@ func Weekends(from time.Time) (Interval, error) {
 	return Weekly(from, 1, []time.Weekday{time.Sunday, time.Saturday})
 }
 
-func Weekdays(from time.Time) (Interval, error) {
+func Weekdays(from time.Time) (Frequency, error) {
 	d := from.Weekday()
 	if d == time.Saturday || d == time.Sunday {
 		from = findNext(time.Monday, from)

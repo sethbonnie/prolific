@@ -1,17 +1,17 @@
-package interval
+package frequency
 
 import (
 	"fmt"
 	"time"
 )
 
-type dailyInterval struct {
+type dailyFrequency struct {
 	startDate time.Time
 	every     int // every n days
 	until     time.Time
 }
 
-func (d dailyInterval) IsActive(t time.Time) bool {
+func (d dailyFrequency) IsActive(t time.Time) bool {
 	if t.Before(d.startDate) {
 		return false
 	}
@@ -28,19 +28,19 @@ func (d dailyInterval) IsActive(t time.Time) bool {
 	return false
 }
 
-func Daily(from time.Time, every int, until time.Time) (Interval, error) {
+func Daily(from time.Time, every int, until time.Time) (Frequency, error) {
 	if every < 1 {
-		return dailyInterval{}, fmt.Errorf("%w: every %v", ErrNonPositiveInt, every)
+		return dailyFrequency{}, fmt.Errorf("%w: every %v", ErrNonPositiveInt, every)
 	}
 
-	d := dailyInterval{
+	d := dailyFrequency{
 		startDate: from,
 		every:     every,
 	}
 
 	if !until.IsZero() {
 		if !from.Before(until) {
-			return dailyInterval{}, fmt.Errorf("from (%v) must be before until (%v)", every, until)
+			return dailyFrequency{}, fmt.Errorf("from (%v) must be before until (%v)", every, until)
 		}
 		d.until = until
 	}
@@ -48,17 +48,17 @@ func Daily(from time.Time, every int, until time.Time) (Interval, error) {
 	return d, nil
 }
 
-func DailyForWeeks(from time.Time, every, weeks int) (Interval, error) {
+func DailyForWeeks(from time.Time, every, weeks int) (Frequency, error) {
 	until := from.AddDate(0, 0, 7*weeks)
 	return Daily(from, every, until)
 }
 
-func DailyForMonths(from time.Time, every, months int) (Interval, error) {
+func DailyForMonths(from time.Time, every, months int) (Frequency, error) {
 	until := from.AddDate(0, months, 0)
 	return Daily(from, every, until)
 }
 
-func DailyForYears(from time.Time, every, years int) (Interval, error) {
+func DailyForYears(from time.Time, every, years int) (Frequency, error) {
 	until := from.AddDate(years, 0, 0)
 	return Daily(from, every, until)
 }
