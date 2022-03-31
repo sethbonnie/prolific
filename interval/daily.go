@@ -47,3 +47,18 @@ func Daily(from time.Time, every int, until time.Time) (Interval, error) {
 
 	return d, nil
 }
+
+func DailyForWeeks(from time.Time, every, weeks int) (Interval, error) {
+	until := from.AddDate(0, 0, 7*weeks)
+	return Daily(from, every, until)
+}
+
+func DailyForMonths(from time.Time, every, months int) (Interval, error) {
+	until := from.AddDate(0, months, 0)
+	return Daily(from, every, until)
+}
+
+func DailyForYears(from time.Time, every, years int) (Interval, error) {
+	until := from.AddDate(years, 0, 0)
+	return Daily(from, every, until)
+}
