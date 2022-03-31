@@ -149,7 +149,7 @@ func TestWeeklyFrequency(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			frequency, err := Weekly(tc.startDate, tc.every, tc.on)
 			require.Nil(t, err)
-			require.Equal(t, tc.expect, frequency.IsActive(tc.date))
+			require.Equal(t, tc.expect, frequency.Check(tc.date))
 		})
 	}
 }
@@ -202,7 +202,7 @@ func TestWeekdayHelpers(t *testing.T) {
 			t.Parallel()
 			frequency, err := tc.fn(tc.start)
 			require.Nil(t, err)
-			require.Equal(t, tc.expected, frequency.IsActive(tc.date))
+			require.Equal(t, tc.expected, frequency.Check(tc.date))
 		})
 	}
 }
@@ -235,7 +235,7 @@ func TestWeekdays(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			frequency, err := Weekdays(tc.from)
 			require.Nil(t, err)
-			require.Equal(t, tc.expected, frequency.IsActive(tc.date))
+			require.Equal(t, tc.expected, frequency.Check(tc.date))
 		})
 	}
 }
@@ -268,7 +268,7 @@ func TestWeekends(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			frequency, err := Weekends(tc.from)
 			require.Nil(t, err)
-			require.Equal(t, tc.expected, frequency.IsActive(tc.date))
+			require.Equal(t, tc.expected, frequency.Check(tc.date))
 		})
 	}
 }

@@ -29,7 +29,7 @@ func Weekly(start time.Time, every int, days []time.Weekday) (Frequency, error) 
 	return weeklyFrequency{start, every, on}, nil
 }
 
-func (w weeklyFrequency) IsActive(t time.Time) bool {
+func (w weeklyFrequency) Check(t time.Time) bool {
 	if !w.on[t.Weekday()] {
 		return false
 	}

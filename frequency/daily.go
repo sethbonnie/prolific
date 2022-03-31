@@ -11,7 +11,7 @@ type dailyFrequency struct {
 	until     time.Time
 }
 
-func (d dailyFrequency) IsActive(t time.Time) bool {
+func (d dailyFrequency) Check(t time.Time) bool {
 	if t.Before(d.startDate) {
 		return false
 	}

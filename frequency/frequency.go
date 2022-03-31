@@ -6,7 +6,7 @@ import (
 )
 
 type Frequency interface {
-	IsActive(time.Time) bool
+	Check(time.Time) bool
 }
 
 var (
