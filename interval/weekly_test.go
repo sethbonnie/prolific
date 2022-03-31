@@ -147,14 +147,15 @@ func TestWeeklyInterval(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual := Weekly(tc.startDate, tc.every, tc.on).IsActive(tc.date)
-			require.Equal(t, tc.expect, actual)
+			interval, err := Weekly(tc.startDate, tc.every, tc.on)
+			require.Nil(t, err)
+			require.Equal(t, tc.expect, interval.IsActive(tc.date))
 		})
 	}
 }
 
 func TestWeekdayHelpers(t *testing.T) {
-	fns := map[time.Weekday]func(time.Time) Interval{
+	fns := map[time.Weekday]func(time.Time) (Interval, error){
 		time.Sunday:    Sundays,
 		time.Monday:    Mondays,
 		time.Tuesday:   Tuesdays,
@@ -166,7 +167,7 @@ func TestWeekdayHelpers(t *testing.T) {
 
 	type testCase struct {
 		name     string
-		fn       func(time.Time) Interval
+		fn       func(time.Time) (Interval, error)
 		start    time.Time
 		date     time.Time
 		expected bool
@@ -199,8 +200,9 @@ func TestWeekdayHelpers(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			result := tc.fn(tc.start).IsActive(tc.date)
-			require.Equal(t, tc.expected, result)
+			interval, err := tc.fn(tc.start)
+			require.Nil(t, err)
+			require.Equal(t, tc.expected, interval.IsActive(tc.date))
 		})
 	}
 }
@@ -231,8 +233,9 @@ func TestWeekdays(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := Weekdays(tc.from).IsActive(tc.date)
-			require.Equal(t, tc.expected, result)
+			interval, err := Weekdays(tc.from)
+			require.Nil(t, err)
+			require.Equal(t, tc.expected, interval.IsActive(tc.date))
 		})
 	}
 }
@@ -263,8 +266,9 @@ func TestWeekends(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := Weekends(tc.from).IsActive(tc.date)
-			require.Equal(t, tc.expected, result)
+			interval, err := Weekends(tc.from)
+			require.Nil(t, err)
+			require.Equal(t, tc.expected, interval.IsActive(tc.date))
 		})
 	}
 }

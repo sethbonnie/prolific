@@ -30,7 +30,7 @@ func (d dailyInterval) IsActive(t time.Time) bool {
 
 func Daily(from time.Time, every int, until time.Time) (Interval, error) {
 	if every < 1 {
-		return dailyInterval{}, fmt.Errorf("every must be >= 1, received %d", every)
+		return dailyInterval{}, fmt.Errorf("%w: every %v", ErrNonPositiveInt, every)
 	}
 
 	d := dailyInterval{

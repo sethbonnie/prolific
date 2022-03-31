@@ -1,6 +1,7 @@
 package interval
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -12,12 +13,20 @@ type weeklyInterval struct {
 	on        weekdays
 }
 
-func Weekly(start time.Time, every int, days []time.Weekday) Interval {
+func Weekly(start time.Time, every int, days []time.Weekday) (Interval, error) {
+	if len(days) == 0 {
+		return weeklyInterval{}, ErrEmptyInterval
+	}
+
+	if every < 1 {
+		return weeklyInterval{}, fmt.Errorf("%w: every %v", ErrNonPositiveInt, every)
+	}
+
 	on := make(weekdays)
 	for _, d := range days {
 		on[d] = true
 	}
-	return weeklyInterval{start, every, on}
+	return weeklyInterval{start, every, on}, nil
 }
 
 func (w weeklyInterval) IsActive(t time.Time) bool {
@@ -41,50 +50,43 @@ func (w weeklyInterval) IsActive(t time.Time) bool {
 	return d.Format(dateFormat) == date
 }
 
-func Sundays(from time.Time) Interval {
+func Sundays(from time.Time) (Interval, error) {
 	return Weekly(findNext(time.Sunday, from), 1, []time.Weekday{time.Sunday})
 }
 
-func Mondays(from time.Time) Interval {
+func Mondays(from time.Time) (Interval, error) {
 	return Weekly(findNext(time.Monday, from), 1, []time.Weekday{time.Monday})
 }
 
-func Tuesdays(from time.Time) Interval {
+func Tuesdays(from time.Time) (Interval, error) {
 	return Weekly(findNext(time.Tuesday, from), 1, []time.Weekday{time.Tuesday})
 }
 
-func Wednesdays(from time.Time) Interval {
+func Wednesdays(from time.Time) (Interval, error) {
 	return Weekly(findNext(time.Wednesday, from), 1, []time.Weekday{time.Wednesday})
 }
 
-func Thursdays(from time.Time) Interval {
+func Thursdays(from time.Time) (Interval, error) {
 	return Weekly(findNext(time.Thursday, from), 1, []time.Weekday{time.Thursday})
 }
 
-func Fridays(from time.Time) Interval {
+func Fridays(from time.Time) (Interval, error) {
 	return Weekly(findNext(time.Friday, from), 1, []time.Weekday{time.Friday})
 }
 
-func Saturdays(from time.Time) Interval {
+func Saturdays(from time.Time) (Interval, error) {
 	return Weekly(findNext(time.Saturday, from), 1, []time.Weekday{time.Saturday})
 }
 
-func Weekends(from time.Time) Interval {
+func Weekends(from time.Time) (Interval, error) {
 	d := from.Weekday()
 	if d != time.Saturday && d != time.Sunday {
 		from = findNext(time.Saturday, from)
 	}
-	return weeklyInterval{
-		startDate: findNext(time.Saturday, from),
-		every:     1,
-		on: weekdays{
-			time.Saturday: true,
-			time.Sunday:   true,
-		},
-	}
+	return Weekly(from, 1, []time.Weekday{time.Sunday, time.Saturday})
 }
 
-func Weekdays(from time.Time) Interval {
+func Weekdays(from time.Time) (Interval, error) {
 	d := from.Weekday()
 	if d == time.Saturday || d == time.Sunday {
 		from = findNext(time.Monday, from)
