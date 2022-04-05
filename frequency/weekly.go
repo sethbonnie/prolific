@@ -18,22 +18,30 @@ func (w weeklyFrequency) Check(t time.Time) bool {
 		return false
 	}
 
-	d := w.startDate
-	date := t.Format(dateFormat)
+	daysDiff := t.Sub(w.startDate).Hours() / 24
 
-	// TODO: Figure out if we can calculate this without using a loop similar to how dailyFrequency.Check works
-	// 	I'm thinking we can use something like t - day % 7*d.every == 0 for each day in d.on
-	for d.Before(t) {
-		for wd := range w.on {
-			if findNext(wd, d).Format(dateFormat) == date {
-				return true
-			}
-		}
-
-		d = d.AddDate(0, 0, w.every*7)
+	if daysDiff < 0 {
+		return false
 	}
 
-	return d.Format(dateFormat) == date
+	if int(daysDiff)%(7*w.every) == 0 {
+		return true
+	}
+
+	for wd := range w.on {
+		next := findNext(wd, w.startDate)
+		daysDiff = t.Sub(next).Hours() / 24
+
+		if daysDiff < 0 {
+			return false
+		}
+
+		if int(daysDiff)%(7*w.every) == 0 {
+			return true
+		}
+	}
+
+	return false
 }
 
 func Weekly(start time.Time, every int, days []time.Weekday) (Frequency, error) {
